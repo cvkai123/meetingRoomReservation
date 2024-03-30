@@ -8,9 +8,9 @@ import com.meetingroomreservation.dto.MeetingRoomDto;
 public interface MeetingRoomService {
     List<MeetingRoomDto> findAllMeetingRoom();
     
-    //public MeetingRoomDto getMeetingRoom(int theId);
+    public MeetingRoomDto getMeetingRoomById(Long theId);
 
-    //public void deleteMeetingRoom(int theId);
+    public void deleteMeetingRoom(Long theId);
     
     public MeetingRoomDto getMeetingRoom(String officeLocation, String meetingRoom);
 

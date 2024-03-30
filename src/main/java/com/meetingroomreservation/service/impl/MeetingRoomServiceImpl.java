@@ -1,13 +1,13 @@
 package com.meetingroomreservation.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.meetingroomreservation.dao.MeetingRoomDAO;
 import com.meetingroomreservation.dto.MeetingRoomDto;
 import com.meetingroomreservation.entity.MeetingRoom;
 import com.meetingroomreservation.repository.MeetingRoomRepository;
@@ -35,6 +35,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
     @Transactional
     public void saveMeetingRoom(MeetingRoomDto meetingRoomDto) {
     	MeetingRoom meetingRoom = new MeetingRoom();
+    	meetingRoom.setId(meetingRoomDto.getId());
     	meetingRoom.setMeetingRoom(meetingRoomDto.getMeetingRoom());
     	meetingRoom.setMeetingRoomDescription(meetingRoomDto.getMeetingRoomDescription());
     	meetingRoom.setAmenitiesInformation(meetingRoomDto.getAmenitiesInformation());
@@ -74,6 +75,20 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 			meetingRoomDto = convertEntityToDto(meetingRoomDetail);
 		}
 		return meetingRoomDto;
+	}
+
+	@Override
+	public MeetingRoomDto getMeetingRoomById(Long theId) {
+		Optional<MeetingRoom> meetingRoomDetail = meetingRoomRepository.findById(theId);
+		if(!meetingRoomDetail.isEmpty()) {
+			return convertEntityToDto(meetingRoomDetail.get());
+		}
+		return null;
+	}
+
+	@Override
+	public void deleteMeetingRoom(Long theId) {
+		meetingRoomRepository.deleteById(theId);
 	}
 
 

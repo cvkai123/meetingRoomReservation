@@ -7,11 +7,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.meetingroomreservation.dto.MeetingRoomDto;
-import com.meetingroomreservation.dto.UserDto;
-import com.meetingroomreservation.entity.User;
 import com.meetingroomreservation.service.MeetingRoomService;
 
 import jakarta.validation.Valid;
@@ -45,7 +44,7 @@ public class MeetingRoomController {
                                BindingResult result,
                                Model model){
         MeetingRoomDto existing = meetingRoomService.getMeetingRoom(meetingRoomDto.getOfficeLocation(),meetingRoomDto.getMeetingRoom());
-        if (existing.getId() != null) {
+        if (!existing.getOfficeLocation().isEmpty()) {
             result.rejectValue("meetingRoom", null, "There is already an meeting room added");
         }
         if (result.hasErrors()) {
@@ -55,23 +54,25 @@ public class MeetingRoomController {
         meetingRoomService.saveMeetingRoom(meetingRoomDto);
         return "redirect:/meetingRoomManagement";
     }
-
-	/*
-	 * @PostMapping("/saveMeetingRoom") public String
-	 * saveMeetingRoom(@ModelAttribute("MeetingRoom") MeetingRoom meetingRoom) {
-	 * meetingRoomService.saveMeetingRoom(meetingRoom); return
-	 * "redirect:/meetingRoom"; }
-	 * 
-	 * @GetMapping("/updateForm") public String
-	 * showFormForUpdate(@RequestParam("meetingRoomId") int theId, Model theModel) {
-	 * MeetingRoom theMeetingRoom = meetingRoomService.getMeetingRoom(theId);
-	 * theModel.addAttribute("meetingRoom", theMeetingRoom); return
-	 * "meetingRoom-form"; }
-	 * 
-	 * @GetMapping("/delete") public String
-	 * deleteMeetingRoom(@RequestParam("meetingRoomId") int theId) {
-	 * meetingRoomService.deleteMeetingRoom(theId); return "redirect:/meetingRoom";
-	 * }
-	 */
-
+    
+    @GetMapping("/editMeetingRoomForm/{id}") 
+    public String showEditMeetingRoomFormForUpdate(@PathVariable ( value = "id") Long id, Model model) {
+    	MeetingRoomDto theMeetingRoom = meetingRoomService.getMeetingRoomById(id);
+    	model.addAttribute("meetingRoom", theMeetingRoom); 
+    	return "meetingRoom-editform"; 
+    }
+    
+    @GetMapping("/deleteMeetingRoomForm/{id}") 
+    public String deleteMeetingRoom(@PathVariable ( value = "id") Long id, Model model) {
+    	meetingRoomService.deleteMeetingRoom(id);
+    	return "redirect:/meetingRoomManagement"; 
+    }
+    
+    @PostMapping("/updateMeetingRoom/save")
+    public String updateMeetingRoom(@Valid @ModelAttribute("meetingRoom") MeetingRoomDto meetingRoomDto,
+                               BindingResult result,
+                               Model model){
+        meetingRoomService.saveMeetingRoom(meetingRoomDto);
+        return "redirect:/meetingRoomManagement";
+    }
 }
