@@ -7,4 +7,6 @@ import com.meetingroomreservation.entity.MeetingRoom;
 public interface MeetingRoomRepository extends JpaRepository<MeetingRoom, Long> {
 	
     MeetingRoom findByMeetingRoom(String meetingRoom);
+    
+    MeetingRoom findByOfficeLocationAndMeetingRoom(String locationOffice, String meetingRoom);
 }

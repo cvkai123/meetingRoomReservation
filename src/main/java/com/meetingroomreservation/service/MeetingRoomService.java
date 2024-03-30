@@ -11,6 +11,8 @@ public interface MeetingRoomService {
     //public MeetingRoomDto getMeetingRoom(int theId);
 
     //public void deleteMeetingRoom(int theId);
+    
+    public MeetingRoomDto getMeetingRoom(String officeLocation, String meetingRoom);
 
 	void saveMeetingRoom(MeetingRoomDto meetingRoomDto);
 }

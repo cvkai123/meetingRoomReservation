@@ -41,6 +41,8 @@ public class SpringSecurity {
 	            .requestMatchers("/index").permitAll()
 	            .requestMatchers("/adminScreen").permitAll()
 	            .requestMatchers("/userScreen").permitAll()
+	            .requestMatchers("/addMeetingRoom/save").permitAll()
+	            .requestMatchers("/showMeetingRoomForm").permitAll()
 	            .requestMatchers("/meetingRoomManagement").permitAll()
 	            .requestMatchers("/users").hasRole("ROLE_ADMIN"))
 				.formLogin(form -> form
