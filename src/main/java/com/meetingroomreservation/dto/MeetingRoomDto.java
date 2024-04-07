@@ -1,5 +1,7 @@
 package com.meetingroomreservation.dto;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,5 +26,5 @@ public class MeetingRoomDto
     @NotEmpty(message = "Meeting room description should not be empty")
     
     private String amenitiesInformation;
-       
+           
 }

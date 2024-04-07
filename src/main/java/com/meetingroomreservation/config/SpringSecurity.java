@@ -46,6 +46,15 @@ public class SpringSecurity {
 	            .requestMatchers("/editMeetingRoomForm/*").permitAll()
 	            .requestMatchers("/deleteMeetingRoomForm/*").permitAll()
 	            
+	            .requestMatchers("/managementMainScreen").permitAll()
+	            
+	            .requestMatchers("/locationManagement").permitAll()
+	            .requestMatchers("/showLocationForm").permitAll()
+	            .requestMatchers("/addLocation/*").permitAll()
+	            .requestMatchers("/editLocationForm/*").permitAll()
+	            .requestMatchers("/deleteLocationForm/*").permitAll()
+	            .requestMatchers("/updateLocation/*").permitAll()
+	            
 	            .requestMatchers("/addMeetingRoom/save").permitAll()
 	            .requestMatchers("/showMeetingRoomForm").permitAll()
 	            .requestMatchers("/meetingRoomManagement").permitAll()

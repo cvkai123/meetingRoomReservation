@@ -69,7 +69,7 @@ public class AuthController {
     public String listRegisteredAdmin(Model model){
         List<UserDto> users = userService.findAllUsers();
         model.addAttribute("users", users);
-        return "adminScreen";
+        return "mainScreenManagement";
     }
     
     @GetMapping("/userScreen")

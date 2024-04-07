@@ -1,7 +1,7 @@
 package com.meetingroomreservation.controller;
 
 import java.util.List;
-
+import java.util.ArrayList;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,6 +34,14 @@ public class MeetingRoomController {
     @GetMapping("/showMeetingRoomForm")
     public String showMeetingRoomFormForAdd(Model theModel) {
     	MeetingRoomDto theMeetingRoom = new MeetingRoomDto();
+    	
+    	List<String> rooms = new ArrayList<>();
+    	rooms.add("AAAAAAAA");
+    	rooms.add("bbbb");
+    	rooms.add("cccc");
+    	
+    	theModel.addAttribute("listing",rooms);
+    	
         theModel.addAttribute("meetingRoom", theMeetingRoom);
         return "meetingRoom-form";
     }
@@ -44,11 +52,17 @@ public class MeetingRoomController {
                                BindingResult result,
                                Model model){
         MeetingRoomDto existing = meetingRoomService.getMeetingRoom(meetingRoomDto.getOfficeLocation(),meetingRoomDto.getMeetingRoom());
-        if (!existing.getOfficeLocation().isEmpty()) {
+        if (existing.getOfficeLocation()!=null) {
             result.rejectValue("meetingRoom", null, "There is already an meeting room added");
         }
         if (result.hasErrors()) {
             model.addAttribute("meetingRoom", meetingRoomDto);
+            List<String> rooms = new ArrayList<>();
+        	rooms.add("AAAAAAAA");
+        	rooms.add("bbbb");
+        	rooms.add("cccc");
+        	
+        	model.addAttribute("listing",rooms);
             return "meetingRoom-form";
         }
         meetingRoomService.saveMeetingRoom(meetingRoomDto);
