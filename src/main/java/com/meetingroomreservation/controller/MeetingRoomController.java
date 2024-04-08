@@ -1,7 +1,8 @@
 package com.meetingroomreservation.controller;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,7 +11,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.meetingroomreservation.dto.LocationDto;
 import com.meetingroomreservation.dto.MeetingRoomDto;
+import com.meetingroomreservation.service.LocationService;
 import com.meetingroomreservation.service.MeetingRoomService;
 
 import jakarta.validation.Valid;
@@ -19,11 +22,13 @@ import jakarta.validation.Valid;
 public class MeetingRoomController {
 
     private MeetingRoomService meetingRoomService;
+    private LocationService locationService;
 
-    public MeetingRoomController(MeetingRoomService meetingRoomService) {
+    public MeetingRoomController(MeetingRoomService meetingRoomService,LocationService locationService) {
         this.meetingRoomService = meetingRoomService;
+        this.locationService = locationService;
     }
-    
+        
     @GetMapping("/meetingRoomManagement")
     public String meetingRoomManagement(Model model){
     	List<MeetingRoomDto> meetingRooms = meetingRoomService.findAllMeetingRoom();
@@ -34,14 +39,16 @@ public class MeetingRoomController {
     @GetMapping("/showMeetingRoomForm")
     public String showMeetingRoomFormForAdd(Model theModel) {
     	MeetingRoomDto theMeetingRoom = new MeetingRoomDto();
+    	List<LocationDto> locations = locationService.findAllOfficeLocation();
     	
-    	List<String> rooms = new ArrayList<>();
-    	rooms.add("AAAAAAAA");
-    	rooms.add("bbbb");
-    	rooms.add("cccc");
-    	
-    	theModel.addAttribute("listing",rooms);
-    	
+    	if(!locations.isEmpty()) {
+    		List<String> locationListing = new ArrayList<>();
+    		for(LocationDto location : locations) {
+    			locationListing.add(location.getOfficeLocation());
+    		}
+        	theModel.addAttribute("listing",locationListing);
+    	}
+    	    	
         theModel.addAttribute("meetingRoom", theMeetingRoom);
         return "meetingRoom-form";
     }
@@ -57,12 +64,16 @@ public class MeetingRoomController {
         }
         if (result.hasErrors()) {
             model.addAttribute("meetingRoom", meetingRoomDto);
-            List<String> rooms = new ArrayList<>();
-        	rooms.add("AAAAAAAA");
-        	rooms.add("bbbb");
-        	rooms.add("cccc");
+            List<LocationDto> locations = locationService.findAllOfficeLocation();
         	
-        	model.addAttribute("listing",rooms);
+        	if(!locations.isEmpty()) {
+        		List<String> locationListing = new ArrayList<>();
+        		for(LocationDto location : locations) {
+        			locationListing.add(location.getOfficeLocation());
+        		}
+        		model.addAttribute("listing",locationListing);
+        	}
+        	
             return "meetingRoom-form";
         }
         meetingRoomService.saveMeetingRoom(meetingRoomDto);

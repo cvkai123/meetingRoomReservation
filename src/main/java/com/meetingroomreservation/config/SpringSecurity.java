@@ -58,6 +58,9 @@ public class SpringSecurity {
 	            .requestMatchers("/addMeetingRoom/save").permitAll()
 	            .requestMatchers("/showMeetingRoomForm").permitAll()
 	            .requestMatchers("/meetingRoomManagement").permitAll()
+	            
+	            .requestMatchers("image/*").permitAll()
+	            
 	            .requestMatchers("/users").hasRole("ROLE_ADMIN"))
 				.formLogin(form -> form
 	            .loginPage("/login")
