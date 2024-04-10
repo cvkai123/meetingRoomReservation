@@ -41,11 +41,18 @@
                                th:field="*{officeLocation}"
                                type="text"
                         /> -->
-                         <div>
+                        <!--  <div>
 	                        <select name="officeLocation">
 							    <option th:each="officeLocation : ${listing}" th:text="${officeLocation}" />
 							</select>
+						</div> -->
+						<div>
+						    <select name="officeLocation">
+						        <option th:each="location : ${listing}" th:value="${location.id}" 
+						        th:text="${location.officeLocation}" />
+						    </select>
 						</div>
+						
                         <p th:errors="*{officeLocation}" class="text-danger"
                            th:if="${#fields.hasErrors('officeLocation')}">
                         </p> 

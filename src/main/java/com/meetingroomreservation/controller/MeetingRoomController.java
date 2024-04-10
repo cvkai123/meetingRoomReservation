@@ -15,6 +15,9 @@ import com.meetingroomreservation.dto.LocationDto;
 import com.meetingroomreservation.dto.MeetingRoomDto;
 import com.meetingroomreservation.service.LocationService;
 import com.meetingroomreservation.service.MeetingRoomService;
+import java.util.Map;
+import java.util.HashMap;
+
 
 import jakarta.validation.Valid;
 
@@ -32,6 +35,10 @@ public class MeetingRoomController {
     @GetMapping("/meetingRoomManagement")
     public String meetingRoomManagement(Model model){
     	List<MeetingRoomDto> meetingRooms = meetingRoomService.findAllMeetingRoom();
+    	for(MeetingRoomDto eachMeetingRoom : meetingRooms) {
+    		eachMeetingRoom.setOfficeLocation(getOfficeLocationFromId(eachMeetingRoom.getOfficeLocation()));
+    	}
+    	
         model.addAttribute("meetingRooms", meetingRooms);
         return "meetingRoom";
     }
@@ -42,9 +49,13 @@ public class MeetingRoomController {
     	List<LocationDto> locations = locationService.findAllOfficeLocation();
     	
     	if(!locations.isEmpty()) {
-    		List<String> locationListing = new ArrayList<>();
+    		List<Map<String, Object>> locationListing = new ArrayList<>();
+    		
     		for(LocationDto location : locations) {
-    			locationListing.add(location.getOfficeLocation());
+    			Map<String, Object> locationMap = new HashMap<>();
+    			locationMap.put("id", location.getId());
+                locationMap.put("officeLocation", location.getOfficeLocation());
+                locationListing.add(locationMap);
     		}
         	theModel.addAttribute("listing",locationListing);
     	}
@@ -83,6 +94,7 @@ public class MeetingRoomController {
     @GetMapping("/editMeetingRoomForm/{id}") 
     public String showEditMeetingRoomFormForUpdate(@PathVariable ( value = "id") Long id, Model model) {
     	MeetingRoomDto theMeetingRoom = meetingRoomService.getMeetingRoomById(id);
+    	theMeetingRoom.setOfficeLocation(getOfficeLocationFromId(theMeetingRoom.getOfficeLocation()));
     	model.addAttribute("meetingRoom", theMeetingRoom); 
     	return "meetingRoom-editform"; 
     }
@@ -99,5 +111,13 @@ public class MeetingRoomController {
                                Model model){
         meetingRoomService.saveMeetingRoom(meetingRoomDto);
         return "redirect:/meetingRoomManagement";
+    }
+    
+    public String getOfficeLocationFromId(String id) {
+    	LocationDto locationDto = locationService.getOfficeLocationById(Long.valueOf(id));
+    	if(locationDto!=null) {
+			return locationDto.getOfficeLocation();
+		}
+    	return null;
     }
 }
