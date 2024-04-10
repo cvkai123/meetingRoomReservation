@@ -39,7 +39,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
     	meetingRoom.setMeetingRoom(meetingRoomDto.getMeetingRoom());
     	meetingRoom.setMeetingRoomDescription(meetingRoomDto.getMeetingRoomDescription());
     	meetingRoom.setAmenitiesInformation(meetingRoomDto.getAmenitiesInformation());
-    	meetingRoom.setOfficeLocation(meetingRoomDto.getOfficeLocation());
+    	meetingRoom.setOfficeLocationId(meetingRoomDto.getOfficeLocationId());
 
     	meetingRoomRepository.save(meetingRoom);
     }
@@ -61,7 +61,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
     	meetingRoomDto.setId(meetingRoom.getId());
     	meetingRoomDto.setMeetingRoom(meetingRoom.getMeetingRoom());
     	meetingRoomDto.setMeetingRoomDescription(meetingRoom.getMeetingRoomDescription());
-    	meetingRoomDto.setOfficeLocation(meetingRoom.getOfficeLocation());
+    	meetingRoomDto.setOfficeLocationId(meetingRoom.getOfficeLocationId());
     	meetingRoomDto.setAmenitiesInformation(meetingRoom.getAmenitiesInformation());
         return meetingRoomDto;
     }
@@ -70,7 +70,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	@Transactional
 	public MeetingRoomDto getMeetingRoom(String officeLocation, String meetingRoom) {
 		MeetingRoomDto meetingRoomDto = new MeetingRoomDto();
-		MeetingRoom meetingRoomDetail = meetingRoomRepository.findByOfficeLocationAndMeetingRoom(officeLocation,meetingRoom);
+		MeetingRoom meetingRoomDetail = meetingRoomRepository.findByOfficeLocationIdAndMeetingRoom(officeLocation,meetingRoom);
 		if(meetingRoomDetail!=null) {
 			meetingRoomDto = convertEntityToDto(meetingRoomDetail);
 		}

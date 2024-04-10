@@ -36,7 +36,7 @@ public class MeetingRoomController {
     public String meetingRoomManagement(Model model){
     	List<MeetingRoomDto> meetingRooms = meetingRoomService.findAllMeetingRoom();
     	for(MeetingRoomDto eachMeetingRoom : meetingRooms) {
-    		eachMeetingRoom.setOfficeLocation(getOfficeLocationFromId(eachMeetingRoom.getOfficeLocation()));
+    		eachMeetingRoom.setOfficeLocationId(getOfficeLocationFromId(eachMeetingRoom.getOfficeLocationId()));
     	}
     	
         model.addAttribute("meetingRooms", meetingRooms);
@@ -69,8 +69,8 @@ public class MeetingRoomController {
     public String addMeetingRoom(@Valid @ModelAttribute("meetingRoom") MeetingRoomDto meetingRoomDto,
                                BindingResult result,
                                Model model){
-        MeetingRoomDto existing = meetingRoomService.getMeetingRoom(meetingRoomDto.getOfficeLocation(),meetingRoomDto.getMeetingRoom());
-        if (existing.getOfficeLocation()!=null) {
+        MeetingRoomDto existing = meetingRoomService.getMeetingRoom(meetingRoomDto.getOfficeLocationId(),meetingRoomDto.getMeetingRoom());
+        if (existing.getOfficeLocationId()!=null) {
             result.rejectValue("meetingRoom", null, "There is already an meeting room added");
         }
         if (result.hasErrors()) {
@@ -94,7 +94,7 @@ public class MeetingRoomController {
     @GetMapping("/editMeetingRoomForm/{id}") 
     public String showEditMeetingRoomFormForUpdate(@PathVariable ( value = "id") Long id, Model model) {
     	MeetingRoomDto theMeetingRoom = meetingRoomService.getMeetingRoomById(id);
-    	theMeetingRoom.setOfficeLocation(getOfficeLocationFromId(theMeetingRoom.getOfficeLocation()));
+    	theMeetingRoom.setOfficeLocationId(getOfficeLocationFromId(theMeetingRoom.getOfficeLocationId()));
     	model.addAttribute("meetingRoom", theMeetingRoom); 
     	return "meetingRoom-editform"; 
     }
@@ -109,6 +109,11 @@ public class MeetingRoomController {
     public String updateMeetingRoom(@Valid @ModelAttribute("meetingRoom") MeetingRoomDto meetingRoomDto,
                                BindingResult result,
                                Model model){
+    	LocationDto locationDto = locationService.getOfficeLocation(meetingRoomDto.getOfficeLocationId());
+    	if(locationDto!=null) {
+    		meetingRoomDto.setOfficeLocationId(String.valueOf(locationDto.getId()));
+    	}
+    	
         meetingRoomService.saveMeetingRoom(meetingRoomDto);
         return "redirect:/meetingRoomManagement";
     }

@@ -34,27 +34,15 @@
 
                     <div class="form-group mb-3">
                         <label class="form-label">Office Location</label>
-                       <!--  <input class="form-control"
-                               id="officeLocation"
-                               name="officeLocation"
-                               placeholder="Enter office location"
-                               th:field="*{officeLocation}"
-                               type="text"
-                        /> -->
-                        <!--  <div>
-	                        <select name="officeLocation">
-							    <option th:each="officeLocation : ${listing}" th:text="${officeLocation}" />
-							</select>
-						</div> -->
 						<div>
-						    <select name="officeLocation">
+						    <select name="officeLocationId">
 						        <option th:each="location : ${listing}" th:value="${location.id}" 
 						        th:text="${location.officeLocation}" />
 						    </select>
 						</div>
 						
-                        <p th:errors="*{officeLocation}" class="text-danger"
-                           th:if="${#fields.hasErrors('officeLocation')}">
+                        <p th:errors="*{officeLocationId}" class="text-danger"
+                           th:if="${#fields.hasErrors('officeLocationId')}">
                         </p> 
                         
 

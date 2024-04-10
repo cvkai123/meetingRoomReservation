@@ -23,8 +23,8 @@ public class MeetingRoom
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name="office_location", nullable=false, unique=false)
-    private String officeLocation;
+    @Column(name="office_location_id", nullable=false, unique=false)
+    private String officeLocationId;
     
     @Column(name="meeting_room", nullable=false, unique=false)
     private String meetingRoom;

@@ -67,7 +67,7 @@
         </thead>
         <tbody>
             	<tr th:each="meetingRoom: ${meetingRooms}">
-                <td th:text="${meetingRoom.officeLocation}"></td>
+                <td th:text="${meetingRoom.officeLocationId}"></td>
                 <td th:text="${meetingRoom.meetingRoom}"></td>
                 <td th:text="${meetingRoom.meetingRoomDescription}"></td>
                 <td> <a th:href="@{/editMeetingRoomForm/{id}(id=${meetingRoom.id})}" class="btn btn-primary">Edit</a>

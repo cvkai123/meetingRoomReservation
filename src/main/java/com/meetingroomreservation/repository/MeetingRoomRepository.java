@@ -10,7 +10,7 @@ public interface MeetingRoomRepository extends JpaRepository<MeetingRoom, Long> 
 	
     MeetingRoom findByMeetingRoom(String meetingRoom);
     
-    MeetingRoom findByOfficeLocationAndMeetingRoom(String locationOffice, String meetingRoom);
+    MeetingRoom findByOfficeLocationIdAndMeetingRoom(String locationOfficeId, String meetingRoom);
     
     Optional<MeetingRoom> findById(Long theId);
 }

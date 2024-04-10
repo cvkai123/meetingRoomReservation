@@ -45,11 +45,11 @@
                                id="officeLocation"
                                name="officeLocation"
                                placeholder="Enter office location"
-                               th:field="*{officeLocation}"
+                               th:field="*{officeLocationId}"
                                type="text" readonly
                         />
-                        <p th:errors="*{officeLocation}" class="text-danger"
-                           th:if="${#fields.hasErrors('officeLocation')}">
+                        <p th:errors="*{officeLocationId}" class="text-danger"
+                           th:if="${#fields.hasErrors('officeLocationId')}">
                         </p>
                     </div>
 

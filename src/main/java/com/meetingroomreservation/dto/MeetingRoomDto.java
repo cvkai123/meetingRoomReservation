@@ -15,7 +15,7 @@ public class MeetingRoomDto
     private Long id;
     
     @NotEmpty(message = "Office location should not be empty")
-    private String officeLocation;
+    private String officeLocationId;
     
     @NotEmpty(message = "Meeting room should not be empty")
     private String meetingRoom;
