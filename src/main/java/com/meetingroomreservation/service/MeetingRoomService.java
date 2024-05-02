@@ -15,4 +15,6 @@ public interface MeetingRoomService {
     public MeetingRoomDto getMeetingRoom(String officeLocation, String meetingRoom);
 
 	void saveMeetingRoom(MeetingRoomDto meetingRoomDto);
+	
+	public List<MeetingRoomDto> getMeetingRoomByOfficeLocationId(String theId);
 }

@@ -36,32 +36,10 @@ public class SpringSecurity {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf().disable()
-		.authorizeHttpRequests(authorize -> authorize
-	            .requestMatchers("/register/**").permitAll()
-	            .requestMatchers("/index").permitAll()
-	            .requestMatchers("/adminScreen").permitAll()
-	            .requestMatchers("/userScreen").permitAll()
-	            .requestMatchers("/updateMeetingRoomForm").permitAll()
-	            .requestMatchers("/updateMeetingRoom/save").permitAll()
-	            .requestMatchers("/editMeetingRoomForm/*").permitAll()
-	            .requestMatchers("/deleteMeetingRoomForm/*").permitAll()
-	            
-	            .requestMatchers("/managementMainScreen").permitAll()
-	            
-	            .requestMatchers("/locationManagement").permitAll()
-	            .requestMatchers("/showLocationForm").permitAll()
-	            .requestMatchers("/addLocation/*").permitAll()
-	            .requestMatchers("/editLocationForm/*").permitAll()
-	            .requestMatchers("/deleteLocationForm/*").permitAll()
-	            .requestMatchers("/updateLocation/*").permitAll()
-	            
-	            .requestMatchers("/addMeetingRoom/save").permitAll()
-	            .requestMatchers("/showMeetingRoomForm").permitAll()
-	            .requestMatchers("/meetingRoomManagement").permitAll()
-	            
-	            .requestMatchers("image/*").permitAll()
-	            
-	            .requestMatchers("/users").hasRole("ROLE_ADMIN"))
+				.authorizeHttpRequests(authorize -> authorize
+	            .requestMatchers("/users").hasRole("ROLE_ADMIN")
+	            .anyRequest().permitAll()
+	            )
 				.formLogin(form -> form
 	            .loginPage("/login")
 	            .loginProcessingUrl("/login")

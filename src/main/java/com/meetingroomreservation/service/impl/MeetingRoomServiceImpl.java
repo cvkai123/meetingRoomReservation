@@ -65,6 +65,16 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
     	meetingRoomDto.setAmenitiesInformation(meetingRoom.getAmenitiesInformation());
         return meetingRoomDto;
     }
+    
+    private MeetingRoom convertEntity(MeetingRoom meetingRoom){
+    	MeetingRoom meetingRoomEntity = new MeetingRoom();
+    	meetingRoomEntity.setId(meetingRoom.getId());
+    	meetingRoomEntity.setMeetingRoom(meetingRoom.getMeetingRoom());
+    	meetingRoomEntity.setMeetingRoomDescription(meetingRoom.getMeetingRoomDescription());
+    	meetingRoomEntity.setOfficeLocationId(meetingRoom.getOfficeLocationId());
+    	meetingRoomEntity.setAmenitiesInformation(meetingRoom.getAmenitiesInformation());
+        return meetingRoomEntity;
+    }
 
 	@Override
 	@Transactional
@@ -85,6 +95,14 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		}
 		return null;
 	}
+		
+	@Override
+    @Transactional
+    public List <MeetingRoomDto> getMeetingRoomByOfficeLocationId(String theId) {
+    	 List<MeetingRoom> meetingRooms = meetingRoomRepository.getMeetingRoomByOfficeLocationId(theId);
+    	 return meetingRooms.stream().map((meetingRoom) -> convertEntityToDto(meetingRoom))
+                 .collect(Collectors.toList());
+    }
 
 	@Override
 	public void deleteMeetingRoom(Long theId) {

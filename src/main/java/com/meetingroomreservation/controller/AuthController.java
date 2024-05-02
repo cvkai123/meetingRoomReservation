@@ -1,6 +1,9 @@
 package com.meetingroomreservation.controller;
 
 import jakarta.validation.Valid;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -67,6 +70,8 @@ public class AuthController {
     
     @GetMapping("/adminScreen")
     public String listRegisteredAdmin(Model model){
+    	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         List<UserDto> users = userService.findAllUsers();
         model.addAttribute("users", users);
         return "mainScreenManagement";
@@ -81,6 +86,6 @@ public class AuthController {
     
     @GetMapping("/booking")
     public String booking(Model model){
-        return "booking";
+        return "mainScreenBooking";
     }
 }

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Meeting Room Reservation System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" th:fragment="header">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/adminScreen}">Meeting Room Reservation System</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</nav>
+<br />
+<br />
+<br />
+<div class="container">
+    <div class="row col-md-8 offset-md-2">
+        <div class="card">
+            <div th:if="${param.success}">
+                <div class="alert alert-info">You've successfully add meeting room!</div>
+            </div>
+            <div class="card-header">
+                <h2 class="text-center">Meeting Room</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" role="form" th:action="@{/meetingRoomSelection/next}" th:object="${meetingRoom}">
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Office Location</label>
+						<div>
+						    <select name="officeLocationId" id="officeLocation"> 
+						    	<option value="">Select Office Location</option>
+						        <option th:each="location : ${listing}" th:value="${location.id}" 
+						        th:text="${location.officeLocation}" />
+						    </select>
+						</div>
+                        <p th:errors="*{officeLocationId}" class="text-danger"
+                           th:if="${#fields.hasErrors('officeLocationId')}">
+                        </p>
+                    </div>
+
+
+
+					<div class="form-group mb-3" id="meetingRoomSection" style="display: none;">
+					    <label class="form-label">Meeting Room</label>
+					    <div>
+					        <select name="meetingRoomId" id="meetingRoom">
+					            <!-- Iterate through meeting rooms -->
+					            <option th:each="room : ${meetingRooms}" th:value="${room.id}" th:text="${room.meetingRoom}" />
+					        </select>
+					    </div>
+					</div>
+										
+					<div class="form-group mb-3" id="meetingRoomInfo" style="display: none;">
+					    <h3>Meeting Room Details</h3>
+					    <p><strong>Description:</strong> <span id="meetingRoomDescription"></span></p>
+					    <p><strong>Amenities:</strong> <span id="amenitiesInformation"></span></p>
+					</div>
+					
+					<div class="form-group mb-3" id="meetingRoomPrivate" style="display: none;">
+					    <label class="form-label">Private Meeting</label>
+					    <div>
+					        <select name="privateMeeting" id="privateMeeting">
+					            <option value="No">No</option>
+					            <option value="Yes">Yes</option>
+					        </select>
+					    </div>
+					</div>
+					
+					<div class="form-group mb-3">
+                        <label class="form-label">Start Time</label>
+                        <div>
+                            <input type="datetime-local" id="startTime" name="startTime" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label">End Time</label>
+                        <div>
+                            <input type="datetime-local" id="endTime" name="endTime" class="form-control" required>
+                        </div>
+                    </div>
+                    
+
+                    <div class="form-group mb-3">
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('officeLocation').addEventListener('change', function() {
+        var selectedLocationId = this.value;
+        var meetingRoomSection = document.getElementById('meetingRoomSection');
+        var meetingRoomDropdown = document.getElementById('meetingRoom');
+        
+        if (selectedLocationId !== '') {
+            // Make an AJAX request to retrieve meeting rooms based on the selected office location
+            fetch('/retrieveMeetingRooms?locationId=' + selectedLocationId)
+                .then(response => response.json())
+                .then(data => {
+                    // Clear existing options
+                    meetingRoomDropdown.innerHTML = '';
+                    
+                    // Populate meeting room dropdown with retrieved meeting rooms
+                    var blankOption = document.createElement('option');
+                    blankOption.value = '';
+	                blankOption.textContent = 'Select Meeting Room';
+	                meetingRoomDropdown.appendChild(blankOption);
+                    data.forEach(room => {
+                        var option = document.createElement('option');
+                        option.value = room.id;
+                        option.textContent = room.meetingRoom;
+                        meetingRoomDropdown.appendChild(option);
+                    });
+                    
+                    // Show the meeting room section
+                    meetingRoomSection.style.display = 'block';
+                    meetingRoomPrivate.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching meeting rooms:', error);
+                });
+        } else {
+            // Hide the meeting room section if no office location is selected
+            meetingRoomSection.style.display = 'none';
+        }
+    });
+
+ // Add an event listener to the meeting room dropdown
+    document.getElementById('meetingRoom').addEventListener('change', function() {
+        var selectedMeetingRoomId = this.value;
+
+        // Make an AJAX request to retrieve meeting room information
+        fetch('/getMeetingRoomInfo?id=' + selectedMeetingRoomId)
+            .then(response => response.json())
+            .then(data => {
+                // Update meeting room description
+                document.getElementById('meetingRoomDescription').innerText = data.meetingRoomDescription;
+                
+                // Update amenities information
+                document.getElementById('amenitiesInformation').innerText = data.amenitiesInformation;
+
+             // Show the meeting room section
+                meetingRoomInfo.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error fetching meeting room information:', error);
+            });
+    });
+
+ 	// Get references to the start and end time input fields
+    const startTimeInput = document.getElementById('startTime');
+    const endTimeInput = document.getElementById('endTime');
+
+    // Add event listener to end time input field to validate against start time
+    endTimeInput.addEventListener('change', function() {
+        // Parse the date and time strings from the input fields
+        const startTime = new Date(startTimeInput.value);
+        const endTime = new Date(endTimeInput.value);
+
+        // Check if end time is earlier than start time
+        if (endTime < startTime) {
+            // Display error message and clear end time input field
+            alert('End time cannot be earlier than start time');
+            endTimeInput.value = '';
+        }
+    });
+        
+</script>
+</body>
+</html>
