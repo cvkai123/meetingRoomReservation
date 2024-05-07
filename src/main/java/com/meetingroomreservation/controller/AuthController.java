@@ -70,8 +70,6 @@ public class AuthController {
     
     @GetMapping("/adminScreen")
     public String listRegisteredAdmin(Model model){
-    	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
         List<UserDto> users = userService.findAllUsers();
         model.addAttribute("users", users);
         return "mainScreenManagement";
@@ -80,7 +78,7 @@ public class AuthController {
     @GetMapping("/userScreen")
     public String listRegisteredUser(Model model){
         List<UserDto> users = userService.findAllUsers();
-        model.addAttribute("users", users);
+        model.addAttribute("users", users); 
         return "userScreen";
     }
     

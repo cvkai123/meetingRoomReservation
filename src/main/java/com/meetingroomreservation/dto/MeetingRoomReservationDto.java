@@ -1,9 +1,9 @@
 package com.meetingroomreservation.dto;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,6 @@ public class MeetingRoomReservationDto
     @NotEmpty(message = "Meeting room should not be empty")
     private String meetingRoomId;
     
-    @NotEmpty(message = "User should not be empty")
     private String userId;
     
     @NotEmpty(message = "Meeting Description should not be empty")
@@ -31,10 +30,10 @@ public class MeetingRoomReservationDto
     
     private String privateMeeting;
     
-    @NotEmpty(message = "Start time should not be empty")
-    private Date startTime;
+    @NotNull(message = "Start time should not be empty")
+    private LocalDateTime startTime;
     
-    @NotEmpty(message = "End Time should not be empty")
-    private Date endTime;
+    @NotNull(message = "End Time should not be empty")
+    private LocalDateTime endTime;
            
 }

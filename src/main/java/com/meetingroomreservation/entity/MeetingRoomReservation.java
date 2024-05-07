@@ -1,6 +1,6 @@
 package com.meetingroomreservation.entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,9 +41,9 @@ public class MeetingRoomReservation
     private String privateMeeting;
 
     @Column(name="start_time", nullable=false)
-    private Date startTime;
+    private LocalDateTime startTime;
     
     @Column(name="end_time", nullable=false)
-    private Date endTime;
+    private LocalDateTime endTime;
     
 }

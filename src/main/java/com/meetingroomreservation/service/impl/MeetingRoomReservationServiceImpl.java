@@ -1,6 +1,9 @@
 package com.meetingroomreservation.service.impl;
 
+import java.util.Date;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,7 @@ public class MeetingRoomReservationServiceImpl implements MeetingRoomReservation
     public void saveMeetingRoomReservation(MeetingRoomReservationDto meetingRoomDto) {
     	MeetingRoomReservation meetingRoom = new MeetingRoomReservation();
     	meetingRoom.setId(meetingRoomDto.getId());
+    	meetingRoom.setOfficeLocationId(meetingRoomDto.getOfficeLocationId());
     	meetingRoom.setUserId(meetingRoomDto.getUserId());
     	meetingRoom.setMeetingRoomId(meetingRoomDto.getMeetingRoomId());
     	meetingRoom.setMeetingDescription(meetingRoomDto.getMeetingDescription());
@@ -60,13 +64,22 @@ public class MeetingRoomReservationServiceImpl implements MeetingRoomReservation
 
 	@Override
 	@Transactional
-	public MeetingRoomReservationDto getMeetingRoomReservation(String officeLocation, String meetingRoom) {
-		MeetingRoomReservationDto meetingRoomDto = new MeetingRoomReservationDto();
-		MeetingRoomReservation meetingRoomDetail = meetingRoomReservationRepository.findByOfficeLocationIdAndMeetingRoomId(officeLocation,meetingRoom);
-		if(meetingRoomDetail!=null) {
-			meetingRoomDto = convertEntityToDto(meetingRoomDetail);
-		}
-		return meetingRoomDto;
+	public List<MeetingRoomReservationDto> getMeetingRoomReservations(String officeLocation, String meetingRoom, LocalDateTime startDate, LocalDateTime endDate) {
+	    List<MeetingRoomReservation> meetingRoomReservations = meetingRoomReservationRepository.findByOfficeLocationIdAndMeetingRoomId(officeLocation, meetingRoom);
+
+	    List<MeetingRoomReservationDto> matchingReservations = new ArrayList<>();
+
+	    for (MeetingRoomReservation reservation : meetingRoomReservations) {
+	    	LocalDateTime reservationStartTime = reservation.getStartTime();
+	    	LocalDateTime reservationEndTime = reservation.getEndTime();
+
+	        // Check if the reservation falls within the given time range
+	        if (startDate.isBefore(reservationEndTime) && endDate.isAfter(reservationStartTime)) {
+	            matchingReservations.add(convertEntityToDto(reservation));
+	        }
+	    }
+
+	    return matchingReservations;
 	}
 
 	@Override

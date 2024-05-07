@@ -3,6 +3,8 @@ package com.meetingroomreservation.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,10 +17,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.meetingroomreservation.dto.LocationDto;
 import com.meetingroomreservation.dto.MeetingRoomDto;
-import com.meetingroomreservation.entity.MeetingRoom;
+import com.meetingroomreservation.dto.MeetingRoomReservationDto;
+import com.meetingroomreservation.entity.User;
 import com.meetingroomreservation.service.LocationService;
 import com.meetingroomreservation.service.MeetingRoomReservationService;
 import com.meetingroomreservation.service.MeetingRoomService;
+import com.meetingroomreservation.service.UserService;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -31,11 +36,16 @@ public class MeetingRoomReservationController {
 	private MeetingRoomReservationService meetingRoomReservationService;
     private MeetingRoomService meetingRoomService;
     private LocationService locationService;
+    private UserService userService;
 
-    public MeetingRoomReservationController(MeetingRoomService meetingRoomService,LocationService locationService, MeetingRoomReservationService meetingRoomReservationService) {
+    public MeetingRoomReservationController(MeetingRoomService meetingRoomService,
+    		LocationService locationService, 
+    		MeetingRoomReservationService meetingRoomReservationService,
+    		UserService userService) {
         this.meetingRoomService = meetingRoomService;
         this.locationService = locationService;
         this.meetingRoomReservationService = meetingRoomReservationService;
+        this.userService = userService;
     }
         
     @GetMapping("/meetingRoomReservationManagement")
@@ -51,7 +61,7 @@ public class MeetingRoomReservationController {
     
     @GetMapping("/showMeetingRoomReservationForm")
     public String showMeetingRoomReservationFormForAdd(Model theModel) {
-    	MeetingRoomDto theMeetingRoom = new MeetingRoomDto();
+    	MeetingRoomReservationDto theMeetingRoom = new MeetingRoomReservationDto();
     	List<LocationDto> locations = locationService.findAllOfficeLocation();
     	
     	if(!locations.isEmpty()) {
@@ -72,29 +82,36 @@ public class MeetingRoomReservationController {
     
  // handler method to handle add meeting room form submit request
     @PostMapping("/addMeetingRoomReservation/save")
-    public String addMeetingRoomReservation(@Valid @ModelAttribute("meetingRoom") MeetingRoomDto meetingRoomDto,
+    public String addMeetingRoomReservation(@Valid @ModelAttribute("meetingRoomReservation") MeetingRoomReservationDto meetingRoomReservationDto,
                                BindingResult result,
                                Model model){
-        MeetingRoomDto existing = meetingRoomService.getMeetingRoom(meetingRoomDto.getOfficeLocationId(),meetingRoomDto.getMeetingRoom());
-        if (existing.getOfficeLocationId()!=null) {
-            result.rejectValue("meetingRoom", null, "There is already an meeting room added");
+    	List<MeetingRoomReservationDto> existing = meetingRoomReservationService.getMeetingRoomReservations(
+    			meetingRoomReservationDto.getOfficeLocationId(),meetingRoomReservationDto.getMeetingRoomId(),
+    			meetingRoomReservationDto.getStartTime(),meetingRoomReservationDto.getEndTime());
+        if (existing.size()>0) {
+            result.rejectValue("meetingRoomReservation", null, "Meeting room has been reserve");
         }
         if (result.hasErrors()) {
-            model.addAttribute("meetingRoom", meetingRoomDto);
-            List<LocationDto> locations = locationService.findAllOfficeLocation();
+            model.addAttribute("meetingRoomReservation", meetingRoomReservationDto);
+			/*
+			 * List<LocationDto> locations = locationService.findAllOfficeLocation();
+			 * 
+			 * if(!locations.isEmpty()) { List<String> locationListing = new ArrayList<>();
+			 * for(LocationDto location : locations) {
+			 * locationListing.add(location.getOfficeLocation()); }
+			 * model.addAttribute("listing",locationListing); }
+			 */
         	
-        	if(!locations.isEmpty()) {
-        		List<String> locationListing = new ArrayList<>();
-        		for(LocationDto location : locations) {
-        			locationListing.add(location.getOfficeLocation());
-        		}
-        		model.addAttribute("listing",locationListing);
-        	}
-        	
-            return "meetingRoom-form";
+            return "meetingRoomReservation-form";
         }
-        meetingRoomService.saveMeetingRoom(meetingRoomDto);
-        return "redirect:/meetingRoomManagement";
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userService.findByEmail(username);
+        meetingRoomReservationDto.setUserId(user.getId().toString());
+        
+        meetingRoomReservationService.saveMeetingRoomReservation(meetingRoomReservationDto);
+        return "redirect:/meetingRoomReservation-form";
     }
     
     @GetMapping("/editMeetingRoomReservationForm/{id}") 
@@ -134,7 +151,7 @@ public class MeetingRoomReservationController {
     
     @GetMapping("/meetingRoomReservationLocationRoom")
 	public String meetingRoomReservationLocationRoom(Model model) {
-    	MeetingRoomDto theMeetingRoom = new MeetingRoomDto();
+    	MeetingRoomReservationDto theMeetingRoom = new MeetingRoomReservationDto();
     	List<LocationDto> locations = locationService.findAllOfficeLocation();
     	
     	if(!locations.isEmpty()) {
@@ -148,8 +165,8 @@ public class MeetingRoomReservationController {
     		}
     		model.addAttribute("listing",locationListing);
     	}
-    	    	
-    	model.addAttribute("meetingRoom", theMeetingRoom);
+    	    	    	
+    	model.addAttribute("meetingRoomReservation", theMeetingRoom);
 		return "meetingRoomReservation-form";
 	}
     
