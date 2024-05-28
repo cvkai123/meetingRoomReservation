@@ -12,6 +12,8 @@ public interface MeetingRoomReservationRepository extends JpaRepository<MeetingR
     //MeetingRoomReservation findByMeetingRoomReservation(String meetingRoom);
     
 	List<MeetingRoomReservation> findByOfficeLocationIdAndMeetingRoomId(String locationOfficeId, String meetingRoom);
+	
+	List<MeetingRoomReservation> findByMeetingRoomId(String meetingRoom);
     
     Optional<MeetingRoomReservation> findById(Long theId);
 }

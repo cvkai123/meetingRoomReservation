@@ -1,5 +1,8 @@
 package com.meetingroomreservation.controller;
 
+import java.io.Console;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,6 +29,7 @@ import com.meetingroomreservation.service.MeetingRoomService;
 import com.meetingroomreservation.service.UserService;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.HashMap;
 
 
@@ -37,6 +42,8 @@ public class MeetingRoomReservationController {
     private MeetingRoomService meetingRoomService;
     private LocationService locationService;
     private UserService userService;
+    private String defaultLocationId;
+    private String defaultRoomId;
 
     public MeetingRoomReservationController(MeetingRoomService meetingRoomService,
     		LocationService locationService, 
@@ -50,13 +57,24 @@ public class MeetingRoomReservationController {
         
     @GetMapping("/meetingRoomReservationManagement")
     public String meetingRoomReservationManagement(Model model){
-    	List<MeetingRoomDto> meetingRooms = meetingRoomService.findAllMeetingRoom();
-    	for(MeetingRoomDto eachMeetingRoom : meetingRooms) {
-    		eachMeetingRoom.setOfficeLocationId(getOfficeLocationFromId(eachMeetingRoom.getOfficeLocationId()));
+    	List<MeetingRoomReservationDto> meetingRoomsReservation = meetingRoomReservationService.findAllMeetingRoomReservation();
+    	for(MeetingRoomReservationDto eachMeetingRoomReservation : meetingRoomsReservation) {
+    		eachMeetingRoomReservation.setOfficeLocationId(getOfficeLocationFromId(eachMeetingRoomReservation.getOfficeLocationId()));
+    		eachMeetingRoomReservation.setMeetingRoomId(getMeetingRoomFromId(eachMeetingRoomReservation.getMeetingRoomId()));
     	}
-    	
-        model.addAttribute("meetingRooms", meetingRooms);
-        return "mainScreenBooking";
+    	List<Map<String, Object>> locationListing = getAllLocationList();
+        if(!locationListing.isEmpty()) {
+        	model.addAttribute("listing",locationListing);
+        }
+        
+    	if(StringUtils.hasText(defaultLocationId)) {
+    		model.addAttribute("defaultLocationId", Long.parseLong(defaultLocationId));
+    		model.addAttribute("defaultRoomId", Long.parseLong(defaultRoomId));
+    		defaultRoomId = null;
+    		defaultLocationId = null;
+    	}
+        model.addAttribute("meetingRoomsReservation", meetingRoomsReservation);
+        return "meetingRoomReservationList";
     }
     
     @GetMapping("/showMeetingRoomReservationForm")
@@ -75,9 +93,8 @@ public class MeetingRoomReservationController {
     		}
         	theModel.addAttribute("listing",locationListing);
     	}
-    	    	
-        theModel.addAttribute("meetingRoom", theMeetingRoom);
-        return "meetingRoom-form";
+    	
+        return "meetingRoomReservationList";
     }
     
  // handler method to handle add meeting room form submit request
@@ -89,7 +106,7 @@ public class MeetingRoomReservationController {
     			meetingRoomReservationDto.getOfficeLocationId(),meetingRoomReservationDto.getMeetingRoomId(),
     			meetingRoomReservationDto.getStartTime(),meetingRoomReservationDto.getEndTime());
         if (existing.size()>0) {
-            result.rejectValue("meetingRoomReservation", null, "Meeting room has been reserve");
+            result.rejectValue("meetingRoomName", null, "Meeting room has been reserve");
         }
         if (result.hasErrors()) {
             model.addAttribute("meetingRoomReservation", meetingRoomReservationDto);
@@ -111,34 +128,66 @@ public class MeetingRoomReservationController {
         meetingRoomReservationDto.setUserId(user.getId().toString());
         
         meetingRoomReservationService.saveMeetingRoomReservation(meetingRoomReservationDto);
-        return "redirect:/meetingRoomReservation-form";
+        
+        MeetingRoomReservationDto theMeetingRoom = new MeetingRoomReservationDto();
+        
+        List<Map<String, Object>> locationListing = getAllLocationList();
+        if(!locationListing.isEmpty()) {
+        	model.addAttribute("listing",locationListing);
+        }
+    	
+    	model.addAttribute("defaultLocationId", Long.parseLong(meetingRoomReservationDto.getOfficeLocationId()));
+    	model.addAttribute("defaultRoomId", Long.parseLong(meetingRoomReservationDto.getMeetingRoomId()));
+    	model.addAttribute("meetingRoomReservation", theMeetingRoom);
+        
+        return "meetingRoomReservationList";
     }
     
     @GetMapping("/editMeetingRoomReservationForm/{id}") 
     public String showEditMeetingRoomReservationFormForUpdate(@PathVariable ( value = "id") Long id, Model model) {
-    	MeetingRoomDto theMeetingRoom = meetingRoomService.getMeetingRoomById(id);
-    	theMeetingRoom.setOfficeLocationId(getOfficeLocationFromId(theMeetingRoom.getOfficeLocationId()));
-    	model.addAttribute("meetingRoom", theMeetingRoom); 
-    	return "meetingRoom-editform"; 
+    	MeetingRoomReservationDto theMeetingRoomReservation = meetingRoomReservationService.getMeetingRoomReservationById(id);
+    	theMeetingRoomReservation.setLocationName(getOfficeLocationFromId(theMeetingRoomReservation.getOfficeLocationId()));
+    	
+    	MeetingRoomDto meetingRoomDto = meetingRoomService.getMeetingRoomById(Long.valueOf(theMeetingRoomReservation.getMeetingRoomId()));
+    	if(meetingRoomDto!=null) {
+    		theMeetingRoomReservation.setAmenitiesInformation(meetingRoomDto.getAmenitiesInformation());
+    		theMeetingRoomReservation.setMeetingRoomDescription(meetingRoomDto.getMeetingRoomDescription());
+    		theMeetingRoomReservation.setMeetingRoomName(meetingRoomDto.getMeetingRoom());
+		}
+    	
+    	// Format the start and end times
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        String formattedStartTime = theMeetingRoomReservation.getStartTime().format(formatter);
+        String formattedEndTime = theMeetingRoomReservation.getEndTime().format(formatter);
+
+        model.addAttribute("formattedStartTime", formattedStartTime);
+        model.addAttribute("formattedEndTime", formattedEndTime);
+    	
+    	model.addAttribute("meetingRoomReservation", theMeetingRoomReservation); 
+    	defaultLocationId = theMeetingRoomReservation.getOfficeLocationId();
+    	defaultRoomId = theMeetingRoomReservation.getMeetingRoomId();
+    	return "meetingRoomReservation-editform"; 
     }
     
     @GetMapping("/deleteMeetingRoomReservationForm/{id}") 
     public String deleteMeetingRoomReservationForm(@PathVariable ( value = "id") Long id, Model model) {
-    	meetingRoomService.deleteMeetingRoom(id);
-    	return "redirect:/meetingRoomManagement"; 
+    	MeetingRoomReservationDto theMeetingRoomReservation = meetingRoomReservationService.getMeetingRoomReservationById(id);
+    	
+    	meetingRoomReservationService.deleteMeetingRoomReservation(id);
+    	
+    	defaultLocationId = theMeetingRoomReservation.getOfficeLocationId();
+    	defaultRoomId = theMeetingRoomReservation.getMeetingRoomId();
+    	
+    	return "redirect:/meetingRoomReservationManagement"; 
     }
-    
+       
     @PostMapping("/updateMeetingRoomReservation/save")
-    public String updateMeetingRoomReservation(@Valid @ModelAttribute("meetingRoom") MeetingRoomDto meetingRoomDto,
+    public String updateMeetingRoomReservation(@Valid @ModelAttribute("meetingRoom") MeetingRoomReservationDto meetingRoomReservation,
                                BindingResult result,
                                Model model){
-    	LocationDto locationDto = locationService.getOfficeLocation(meetingRoomDto.getOfficeLocationId());
-    	if(locationDto!=null) {
-    		meetingRoomDto.setOfficeLocationId(String.valueOf(locationDto.getId()));
-    	}
-    	
-        meetingRoomService.saveMeetingRoom(meetingRoomDto);
-        return "redirect:/meetingRoomManagement";
+    	    	
+    	meetingRoomReservationService.saveMeetingRoomReservation(meetingRoomReservation);
+        return "redirect:/meetingRoomReservationManagement";
     }
     
     public String getOfficeLocationFromId(String id) {
@@ -149,6 +198,50 @@ public class MeetingRoomReservationController {
     	return null;
     }
     
+    public List<Map<String, Object>> getAllLocationList(){
+		List<LocationDto> locations = locationService.findAllOfficeLocation();
+		
+		if(!locations.isEmpty()) {
+			List<Map<String, Object>> locationListing = new ArrayList<>();
+			
+			for(LocationDto location : locations) {
+				Map<String, Object> locationMap = new HashMap<>();
+				locationMap.put("id", location.getId());
+	            locationMap.put("officeLocation", location.getOfficeLocation());
+	            locationListing.add(locationMap);
+			}
+			return locationListing;
+		}
+		return null;
+    }
+    
+    public String getMeetingRoomFromId(String id) {
+    	MeetingRoomDto meetingRoomDto = meetingRoomService.getMeetingRoomById(Long.valueOf(id));
+    	if(meetingRoomDto!=null) {
+			return meetingRoomDto.getMeetingRoom();
+		}
+    	return null;
+    }
+    
+    @GetMapping("/meetingRoomReservationForm")
+    public String meetingRoomReservationForm(@RequestParam("meetingRoomId") String meetingRoomId, Model model) {
+        
+    	System.out.println(meetingRoomId);
+    	MeetingRoomReservationDto theMeetingRoom = new MeetingRoomReservationDto();
+    	MeetingRoomDto meetingRoomDto = meetingRoomService.getMeetingRoomById(Long.parseLong(meetingRoomId));
+    	theMeetingRoom.setMeetingRoomId(meetingRoomDto.getId().toString());
+    	theMeetingRoom.setOfficeLocationId(meetingRoomDto.getOfficeLocationId());
+    	theMeetingRoom.setAmenitiesInformation(meetingRoomDto.getAmenitiesInformation());
+    	theMeetingRoom.setMeetingRoomDescription(meetingRoomDto.getMeetingRoomDescription());
+    	theMeetingRoom.setMeetingRoomName(meetingRoomDto.getMeetingRoom());
+    	LocationDto location = locationService.getOfficeLocationById(Long.parseLong(meetingRoomDto.getOfficeLocationId()));
+    	theMeetingRoom.setLocationName(location.getOfficeLocation());
+    	    	    	
+    	model.addAttribute("meetingRoomReservation", theMeetingRoom);
+        // For demonstration purposes, let's just return a view name
+        return "meetingRoomReservation-form"; // assuming you have a bookingPage.jsp or bookingPage.html
+    }
+        
     @GetMapping("/meetingRoomReservationLocationRoom")
 	public String meetingRoomReservationLocationRoom(Model model) {
     	MeetingRoomReservationDto theMeetingRoom = new MeetingRoomReservationDto();
@@ -186,4 +279,34 @@ public class MeetingRoomReservationController {
         return meetingRoom;
     }
     
+    @GetMapping("/getMeetingRoomReservationInfo")
+    @ResponseBody
+    public List<MeetingRoomReservationDto> getMeetingRoomReservationInfo(@RequestParam("id") Long id){
+    	List<MeetingRoomReservationDto> arrayListMeetingRoomReservation = new ArrayList<>();
+    	List<MeetingRoomReservationDto> meetingRoomReservations = meetingRoomReservationService.getMeetingRoomReservationsByMeetingRoom(id.toString());
+    	for(MeetingRoomReservationDto eachMeetingRoomReservation : meetingRoomReservations) {
+    		eachMeetingRoomReservation.setOfficeLocationId(getOfficeLocationFromId(eachMeetingRoomReservation.getOfficeLocationId()));
+    		
+    		Optional<User> u = userService.findById(Long.parseLong(eachMeetingRoomReservation.getUserId()));
+    		if(!u.isEmpty()) {
+    			eachMeetingRoomReservation.setUserId(u.get().getName());
+    		}
+    		
+    		if(eachMeetingRoomReservation.getPrivateMeeting().equals("Yes")) {
+    			eachMeetingRoomReservation.setMeetingDescription("***********");
+    		}
+    		
+    		// Parse the string to LocalDateTime
+            LocalDateTime startDateTime = LocalDateTime.parse(eachMeetingRoomReservation.getStartTime().toString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            LocalDateTime endDateTime = LocalDateTime.parse(eachMeetingRoomReservation.getEndTime().toString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+            // Format the LocalDateTime without the 'T'
+            eachMeetingRoomReservation.setStrStartTime(startDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            eachMeetingRoomReservation.setStrEndTime(endDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            
+    		arrayListMeetingRoomReservation.add(eachMeetingRoomReservation);
+    	}
+    	
+        return arrayListMeetingRoomReservation;
+    }    
 }

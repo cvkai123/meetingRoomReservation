@@ -35,5 +35,14 @@ public class MeetingRoomReservationDto
     
     @NotNull(message = "End Time should not be empty")
     private LocalDateTime endTime;
+    
+    private String strStartTime;
+    
+    private String strEndTime;
+    
+    private String locationName;
+    private String meetingRoomName;
+    private String amenitiesInformation;
+    private String meetingRoomDescription;
            
 }

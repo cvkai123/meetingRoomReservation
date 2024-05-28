@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.meetingroomreservation.dto.MeetingRoomReservationDto;
+import com.meetingroomreservation.entity.MeetingRoom;
 import com.meetingroomreservation.entity.MeetingRoomReservation;
 import com.meetingroomreservation.repository.MeetingRoomReservationRepository;
 import com.meetingroomreservation.service.MeetingRoomReservationService;
@@ -52,13 +53,14 @@ public class MeetingRoomReservationServiceImpl implements MeetingRoomReservation
     
     private MeetingRoomReservationDto convertEntityToDto(MeetingRoomReservation meetingRoom){
     	MeetingRoomReservationDto meetingRoomDto = new MeetingRoomReservationDto();
-    	meetingRoomDto.setId(meetingRoomDto.getId());
-    	meetingRoomDto.setUserId(meetingRoomDto.getUserId());
-    	meetingRoomDto.setMeetingRoomId(meetingRoomDto.getMeetingRoomId());
-    	meetingRoomDto.setMeetingDescription(meetingRoomDto.getMeetingDescription());
-    	meetingRoomDto.setPrivateMeeting(meetingRoomDto.getPrivateMeeting());
-    	meetingRoomDto.setStartTime(meetingRoomDto.getStartTime());
-    	meetingRoomDto.setEndTime(meetingRoomDto.getEndTime());
+    	meetingRoomDto.setId(meetingRoom.getId());
+    	meetingRoomDto.setOfficeLocationId(meetingRoom.getOfficeLocationId());
+    	meetingRoomDto.setUserId(meetingRoom.getUserId());
+    	meetingRoomDto.setMeetingRoomId(meetingRoom.getMeetingRoomId());
+    	meetingRoomDto.setMeetingDescription(meetingRoom.getMeetingDescription());
+    	meetingRoomDto.setPrivateMeeting(meetingRoom.getPrivateMeeting());
+    	meetingRoomDto.setStartTime(meetingRoom.getStartTime());
+    	meetingRoomDto.setEndTime(meetingRoom.getEndTime());
         return meetingRoomDto;
     }
 
@@ -80,6 +82,16 @@ public class MeetingRoomReservationServiceImpl implements MeetingRoomReservation
 	    }
 
 	    return matchingReservations;
+	}
+	
+	@Override
+	@Transactional
+	public List<MeetingRoomReservationDto> getMeetingRoomReservationsByMeetingRoom(String meetingRoom) {
+
+	    List<MeetingRoomReservation> meetingRoomReservations = meetingRoomReservationRepository.findByMeetingRoomId(meetingRoom);
+        return meetingRoomReservations.stream().map((meetingRoomReservation) -> convertEntityToDto(meetingRoomReservation))
+                .collect(Collectors.toList());
+        
 	}
 
 	@Override

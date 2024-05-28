@@ -32,39 +32,56 @@
             <div class="card-body">
                 <form method="post" role="form" th:action="@{/addMeetingRoomReservation/save}" th:object="${meetingRoomReservation}">
 
-                    <div class="form-group mb-3">
-                        <label class="form-label">Office Location</label>
-						<div>
-						    <select name="officeLocationId" id="officeLocation"> 
-						    	<option value="">Select Office Location</option>
-						        <option th:each="location : ${listing}" th:value="${location.id}" 
-						        th:text="${location.officeLocation}" />
-						    </select>
-						</div>
-                        <p th:errors="*{officeLocationId}" class="text-danger"
-                           th:if="${#fields.hasErrors('officeLocationId')}">
-                        </p>
-                    </div>
-
-
-
-					<div class="form-group mb-3" id="meetingRoomSection" style="display: none;">
-					    <label class="form-label">Meeting Room</label>
-					    <div>
-					        <select name="meetingRoomId" id="meetingRoom">
-					            <!-- Iterate through meeting rooms -->
-					            <option th:each="room : ${meetingRooms}" th:value="${room.id}" th:text="${room.meetingRoom}" />
-					        </select>
-					    </div>
-					</div>
-										
-					<div class="form-group mb-3" id="meetingRoomInfo" style="display: none;">
-					    <h3>Meeting Room Details</h3>
-					    <p><strong>Description:</strong> <span id="meetingRoomDescription"></span></p>
-					    <p><strong>Amenities:</strong> <span id="amenitiesInformation"></span></p>
+					<div class="form-group mb-3">
+					    <label class="form-label">Location Meeting Room</label>
+					    <input class="form-control"
+					           id="locationName"
+					           name="locationName"
+					           placeholder="Location Meeting Room"
+					           th:value="${meetingRoomReservation.locationName}"
+					           readonly
+					           type="text"
+					    />
 					</div>
 					
-					<div class="form-group mb-3" id="meetingRoomPrivate" style="display: none;">
+					<div class="form-group mb-3">
+					    <label class="form-label">Meeting Room</label>
+					    <input class="form-control"
+					           id="meetingRoomName"
+					           name="meetingRoomName"
+					           placeholder="Meeting Room ID"
+					           th:value="${meetingRoomReservation.meetingRoomName}"
+					           readonly
+					           type="text"
+					    />
+					</div>
+					
+					<div class="form-group mb-3" style="display: none;">
+					    <input class="form-control"
+					           id="meetingRoomId"
+					           name="meetingRoomId"
+					           placeholder="Meeting Room ID"
+					           th:value="${meetingRoomReservation.meetingRoomId}"
+					           type="text"
+					    />
+					</div>
+					
+					<div class="form-group mb-3" style="display: none;">
+					    <input class="form-control"
+					           id="officeLocationId"
+					           name="officeLocationId"
+					           th:value="${meetingRoomReservation.officeLocationId}"
+					           type="text"
+					    />
+					</div>
+					
+					<div class="form-group mb-3" id="meetingRoomInfo">
+					    <h3>Meeting Room Details</h3>
+					    <p><strong>Description:</strong> <span th:text="${meetingRoomReservation.meetingRoomDescription}"></span></p>
+					    <p><strong>Amenities:</strong> <span th:text="${meetingRoomReservation.amenitiesInformation}"></span></p>
+					</div>
+
+					<div class="form-group mb-3" id="meetingRoomPrivate" >
 					    <label class="form-label">Private Meeting</label>
 					    <div>
 					        <select name="privateMeeting" id="privateMeeting">
@@ -111,65 +128,7 @@
     </div>
 </div>
 <script>
-    document.getElementById('officeLocation').addEventListener('change', function() {
-        var selectedLocationId = this.value;
-        var meetingRoomSection = document.getElementById('meetingRoomSection');
-        var meetingRoomDropdown = document.getElementById('meetingRoom');
-        
-        if (selectedLocationId !== '') {
-            // Make an AJAX request to retrieve meeting rooms based on the selected office location
-            fetch('/retrieveMeetingRooms?locationId=' + selectedLocationId)
-                .then(response => response.json())
-                .then(data => {
-                    // Clear existing options
-                    meetingRoomDropdown.innerHTML = '';
-                    
-                    // Populate meeting room dropdown with retrieved meeting rooms
-                    var blankOption = document.createElement('option');
-                    blankOption.value = '';
-	                blankOption.textContent = 'Select Meeting Room';
-	                meetingRoomDropdown.appendChild(blankOption);
-                    data.forEach(room => {
-                        var option = document.createElement('option');
-                        option.value = room.id;
-                        option.textContent = room.meetingRoom;
-                        meetingRoomDropdown.appendChild(option);
-                    });
-                    
-                    // Show the meeting room section
-                    meetingRoomSection.style.display = 'block';
-                    meetingRoomPrivate.style.display = 'block';
-                })
-                .catch(error => {
-                    console.error('Error fetching meeting rooms:', error);
-                });
-        } else {
-            // Hide the meeting room section if no office location is selected
-            meetingRoomSection.style.display = 'none';
-        }
-    });
-
- // Add an event listener to the meeting room dropdown
-    document.getElementById('meetingRoom').addEventListener('change', function() {
-        var selectedMeetingRoomId = this.value;
-
-        // Make an AJAX request to retrieve meeting room information
-        fetch('/getMeetingRoomInfo?id=' + selectedMeetingRoomId)
-            .then(response => response.json())
-            .then(data => {
-                // Update meeting room description
-                document.getElementById('meetingRoomDescription').innerText = data.meetingRoomDescription;
-                
-                // Update amenities information
-                document.getElementById('amenitiesInformation').innerText = data.amenitiesInformation;
-
-             // Show the meeting room section
-                meetingRoomInfo.style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Error fetching meeting room information:', error);
-            });
-    });
+  
 
  	// Get references to the start and end time input fields
     const startTimeInput = document.getElementById('startTime');
