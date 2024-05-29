@@ -57,19 +57,7 @@ public class SpringSecurity {
 	        @Override
 	        protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 	        	
-	        	String roleName = null;
-	        	Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-
-	        	// Iterate over authorities to get the role names
-	        	for (GrantedAuthority authority : authorities) {
-	        	    roleName = authority.getAuthority();
-	        	}
-	        		        	
-	        	if (roleName.equals("ROLE_ADMIN")) {
-	                return "/adminScreen"; // Redirect to admin dashboard for ADMIN role
-	            } else {
-	                return "/userScreen"; // Redirect to user profile for other roles
-	            }
+	        	return "/mainScreen";
 	        }
 	    };
 	}

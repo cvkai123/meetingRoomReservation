@@ -68,20 +68,18 @@ public class AuthController {
         return "users";
     }
     
-    @GetMapping("/adminScreen")
+    @GetMapping("/mainScreen")
     public String listRegisteredAdmin(Model model){
-        List<UserDto> users = userService.findAllUsers();
-        model.addAttribute("users", users);
-        return "mainScreenManagement";
+    	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userService.findByEmail(username);
+        if(user.getRoles().get(0).getName().equals("ROLE_ADMIN")) {
+        	return "mainScreenManagement";
+        }else {
+        	return "mainScreenUser";
+        }
     }
-    
-    @GetMapping("/userScreen")
-    public String listRegisteredUser(Model model){
-        List<UserDto> users = userService.findAllUsers();
-        model.addAttribute("users", users); 
-        return "userScreen";
-    }
-    
+        
     @GetMapping("/booking")
     public String booking(Model model){
         return "mainScreenBooking";

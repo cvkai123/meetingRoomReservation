@@ -13,18 +13,12 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/adminScreen">Meeting Room Reservation System</a>
+        <a class="navbar-brand" href="/mainScreen">Meeting Room Reservation System</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{/managementMainScreen}">Meeting Room Management </a>
-                </li>
-                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{/booking}"> Booking Meeting Room </a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link active" style="position: absolute; right: 0;" aria-current="page" th:href="@{/logout}">Logout</a>
                 </li>
@@ -48,7 +42,7 @@
 	                        <path fill="#63E6BE" d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/>
 	                    </svg>
 	                    <br>
-		                    I want to manage locations
+		                    Manage locations
 	                </button>
 	                
 	            </div>
@@ -60,9 +54,20 @@
 	                        <path fill="#63E6BE" d="M48 0C21.5 0 0 21.5 0 48V464c0 26.5 21.5 48 48 48h96V432c0-26.5 21.5-48 48-48s48 21.5 48 48v80h96c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48H48zM64 240c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V240zm112-16h32c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H176c-8.8 0-16-7.2-16-16V240c0-8.8 7.2-16 16-16zm80 16c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H272c-8.8 0-16-7.2-16-16V240zM80 96h32c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16zm80 16c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H176c-8.8 0-16-7.2-16-16V112zM272 96h32c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H272c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16z"/>
 	                    </svg>
 	                    <br>
-		                    I want to manage meeting rooms
+		                    Manage meeting rooms
 	                </button>
 	                
+	            </div>
+	        </td>
+	        <td>
+	            <div class="form-group mb-6">
+	                <button style="border: none;" onclick="window.location.href='showMeetingRoomReservationForm'; return false;">
+	                    <svg xmlns="http://www.w3.org/2000/svg" height="248" width="168" viewBox="0 0 448 512">
+	                    	<path fill="#63E6BE" d="M96 32V64H48C21.5 64 0 85.5 0 112v48H448V112c0-26.5-21.5-48-48-48H352V32c0-17.7-14.3-32-32-32s-32 14.3-32 32V64H160V32c0-17.7-14.3-32-32-32S96 14.3 96 32zM448 192H0V464c0 26.5 21.5 48 48 48H400c26.5 0 48-21.5 48-48V192z"/>
+	                    </svg>
+	                    <br>
+		                    Book Meeting Rooms
+	                </button>
 	            </div>
 	        </td>
 	    </tr>

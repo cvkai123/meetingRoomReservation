@@ -42,6 +42,8 @@ public class UserServiceImpl implements UserService {
         Role role = roleRepository.findByName("ROLE_ADMIN");
         if(role == null){
             role = checkRoleExist();
+        }else {
+        	role = assignUserRole();
         }
         user.setRoles(Arrays.asList(role));
         userRepository.save(user);
@@ -71,6 +73,12 @@ public class UserServiceImpl implements UserService {
     private Role checkRoleExist() {
         Role role = new Role();
         role.setName("ROLE_ADMIN");
+        return roleRepository.save(role);
+    }
+    
+    private Role assignUserRole() {
+        Role role = new Role();
+        role.setName("USER");
         return roleRepository.save(role);
     }
 
