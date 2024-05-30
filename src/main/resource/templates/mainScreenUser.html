@@ -32,46 +32,24 @@
     </div>
 	
 	<h4>Current date and time: <span id="datetime"></span></h4>
+
+ 	<table>
+	    <tr>
+	        <td>
+	            <div class="form-group mb-6">
+	                <button style="border: none;" onclick="window.location.href='showMeetingRoomReservationForm'; return false;">
+	                    <svg xmlns="http://www.w3.org/2000/svg" height="248" width="168" viewBox="0 0 448 512">
+	                    	<path fill="#63E6BE" d="M96 32V64H48C21.5 64 0 85.5 0 112v48H448V112c0-26.5-21.5-48-48-48H352V32c0-17.7-14.3-32-32-32s-32 14.3-32 32V64H160V32c0-17.7-14.3-32-32-32S96 14.3 96 32zM448 192H0V464c0 26.5 21.5 48 48 48H400c26.5 0 48-21.5 48-48V192z"/>
+	                    </svg>
+	                    <br>
+		                    Book Meeting Rooms
+	                </button>
+	            </div>
+	        </td>
+	    </tr>
+	</table>
  	
- 	<div class="row">
-	    <div class="col-md-1">
-	        <div class="form-group mb-3">
-	            <input type="button" value="Add"
-	            onclick="window.location.href='showMeetingRoomForm'; return false;"
-	            class="btn btn-primary btn-block" />
-	        </div>
-	    </div>
-	    <div class="col-md-1">
-	        <div class="form-group mb-3">
-	            <input type="button" value="Back"
-	            onclick="window.location.href='mainScreen'; return false;"
-	            class="btn btn-primary btn-block" />
-	        </div>
-	    </div>
-	</div>
  	
-    <table class="table table-striped table-bordered table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>Office Location</th>
-                <th>Meeting Room</th>
-                <th>Meeting Room Description</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            	<tr th:each="meetingRoom: ${meetingRooms}">
-                <td th:text="${meetingRoom.officeLocationId}"></td>
-                <td th:text="${meetingRoom.meetingRoom}"></td>
-                <td th:text="${meetingRoom.meetingRoomDescription}"></td>
-                <td> <a th:href="@{/editMeetingRoomForm/{id}(id=${meetingRoom.id})}" class="btn btn-primary">Edit</a>
-                     <a th:href="@{/deleteMeetingRoomForm/{id}(id=${meetingRoom.id})}" class="btn btn-danger" 
-                     onclick="if (!(confirm('Are you sure you want to delete this meeting room?'))) return false">Delete</a>
-                 </td>
-		        <tr>
-            </tr>
-        </tbody>
-    </table>
 </div>
 
 <script>

@@ -106,7 +106,7 @@ public class MeetingRoomReservationController {
     			meetingRoomReservationDto.getOfficeLocationId(),meetingRoomReservationDto.getMeetingRoomId(),
     			meetingRoomReservationDto.getStartTime(),meetingRoomReservationDto.getEndTime());
         if (existing.size()>0) {
-            result.rejectValue("meetingRoomName", null, "Meeting room has been reserve");
+            result.rejectValue("meetingRoomName", null, "Meeting room has been reserved");
         }
         if (result.hasErrors()) {
             model.addAttribute("meetingRoomReservation", meetingRoomReservationDto);
@@ -180,15 +180,33 @@ public class MeetingRoomReservationController {
     	
     	return "redirect:/meetingRoomReservationManagement"; 
     }
-       
+    
     @PostMapping("/updateMeetingRoomReservation/save")
-    public String updateMeetingRoomReservation(@Valid @ModelAttribute("meetingRoom") MeetingRoomReservationDto meetingRoomReservation,
-                               BindingResult result,
-                               Model model){
-    	    	
-    	meetingRoomReservationService.saveMeetingRoomReservation(meetingRoomReservation);
+    public String updateMeetingRoomReservation(@Valid @ModelAttribute("meetingRoomReservation") MeetingRoomReservationDto meetingRoomReservation,
+                                               BindingResult result,
+                                               Model model) {
+        // Check for existing reservations that overlap with the requested time slot
+        List<MeetingRoomReservationDto> existingReservations = meetingRoomReservationService.getMeetingRoomReservations(
+                meetingRoomReservation.getOfficeLocationId(),
+                meetingRoomReservation.getMeetingRoomId(),
+                meetingRoomReservation.getStartTime(),
+                meetingRoomReservation.getEndTime());
+        
+        if (!existingReservations.isEmpty()) {
+            result.rejectValue("meetingRoomName", null, "Meeting room has already been reserved for the selected time slot.");
+        }
+        
+        // Handle form validation errors
+        if (result.hasErrors()) {
+            model.addAttribute("meetingRoomReservation", meetingRoomReservation);            
+            return "meetingRoomReservation-editform";
+        }
+        
+        // Save the reservation if there are no errors
+        meetingRoomReservationService.saveMeetingRoomReservation(meetingRoomReservation);
         return "redirect:/meetingRoomReservationManagement";
     }
+
     
     public String getOfficeLocationFromId(String id) {
     	LocationDto locationDto = locationService.getOfficeLocationById(Long.valueOf(id));

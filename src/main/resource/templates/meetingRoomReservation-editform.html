@@ -1,166 +1,131 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Meeting Room Reservation System</title>
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet"
-	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-	crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>Meeting Room Reservation System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body>
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top"
-		th:fragment="header">
-		<div class="container-fluid">
-			<a class="navbar-brand" th:href="@{/mainScreen}">Meeting Room
-				Reservation System</a>
-			<button class="navbar-toggler" type="button"
-				data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-				aria-controls="navbarSupportedContent" aria-expanded="false"
-				aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-		</div>
-	</nav>
-	<br />
-	<br />
-	<br />
-	<div class="container">
-		<div class="row col-md-8 offset-md-2">
-			<div class="card">
-				<div th:if="${param.success}">
-					<div class="alert alert-info">You've successfully add meeting
-						room!</div>
-				</div>
-				<div class="card-header">
-					<h2 class="text-center">Meeting Room Reservation - Edit</h2>
-				</div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" th:fragment="header">
+        <div class="container-fluid">
+            <a class="navbar-brand" th:href="@{/mainScreen}">Meeting Room Reservation System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+    <br />
+    <br />
+    <br />
+    <div class="container">
+        <div class="row col-md-8 offset-md-2">
+            <div class="card">
+                <!-- Success message display -->
+                <div th:if="${param.success}">
+                    <div class="alert alert-info">You've successfully added a meeting room!</div>
+                </div>
+                <div class="card-header">
+                    <h2 class="text-center">Meeting Room Reservation - Edit</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Reservation form -->
+                    <form method="post" role="form" th:action="@{/updateMeetingRoomReservation/save}"
+                        th:object="${meetingRoomReservation}">
+                        <!-- Back button -->
+                        <div class="form-group mb-3">
+                            <input type="button" value="Back" onclick="window.location.href='/meetingRoomReservationManagement'; return false;"
+                                class="btn btn-primary" />
+                        </div>
+                        <!-- Hidden fields -->
+                        <input type="hidden" id="meetingRoomId" name="meetingRoomId" th:value="${meetingRoomReservation.meetingRoomId}" />
+                        <input type="hidden" id="id" name="id" th:value="${meetingRoomReservation.id}" />
+                        <input type="hidden" id="officeLocationId" name="officeLocationId" th:value="${meetingRoomReservation.officeLocationId}" />
+                        <input type="hidden" id="userId" name="userId" th:value="${meetingRoomReservation.userId}" />
 
-				<div class="card-body">
-					<form method="post" role="form"
-						th:action="@{/updateMeetingRoomReservation/save}"
-						th:object="${meetingRoomReservation}">
-						<div class="form-group mb-3">
-							<input type="button" value="Back"
-								onclick="window.location.href='/meetingRoomReservationManagement'; 
-						    return false;"
-								class="btn btn-primary" />
-						</div>
-						<div class="form-group mb-3" style="display: none;">
-							<input class="form-control" id="meetingRoomId"
-								name="meetingRoomId" placeholder="Meeting Room ID"
-								th:value="${meetingRoomReservation.meetingRoomId}" type="text" />
-						</div>
+                        <!-- Location name (readonly) -->
+                        <div class="form-group mb-3">
+                            <label class="form-label">Location Meeting Room</label>
+                            <input class="form-control" id="locationName" name="locationName" placeholder="Location Meeting Room"
+                                th:value="${meetingRoomReservation.locationName}" readonly />
+                        </div>
 
-						<div class="form-group mb-3" style="display: none;">
-							<input class="form-control" id="id" name="id"
-								th:value="${meetingRoomReservation.id}" type="text" />
-						</div>
+                        <!-- Meeting room name (readonly) -->
+                        <div class="form-group mb-3">
+                            <label class="form-label">Meeting Room</label>
+                            <input class="form-control" id="meetingRoomName" name="meetingRoomName" placeholder="Meeting Room Name"
+                                th:value="${meetingRoomReservation.meetingRoomName}" readonly />
+                            <p th:errors="*{meetingRoomName}" class="text-danger" th:if="${#fields.hasErrors('meetingRoomName')}"></p>
+                        </div>
 
-						<div class="form-group mb-3" style="display: none;">
-							<input class="form-control" id="officeLocationId"
-								name="officeLocationId"
-								th:value="${meetingRoomReservation.officeLocationId}"
-								type="text" />
-						</div>
-						
-						<div class="form-group mb-3" style="display: none;">
-							<input class="form-control" id="userId"
-								name="userId"
-								th:value="${meetingRoomReservation.userId}"
-								type="text" />
-						</div>
-						
-						<!-- <input type="hidden" th:field="*{id}" /> -->
-						<div class="form-group mb-3">
-							<label class="form-label">Location Meeting Room</label> <input
-								class="form-control" id="locationName" name="locationName"
-								placeholder="Location Meeting Room"
-								th:value="${meetingRoomReservation.locationName}" readonly
-								type="text" />
-						</div>
+                        <!-- Meeting room details -->
+                        <div class="form-group mb-3" id="meetingRoomInfo">
+                            <h3>Meeting Room Details</h3>
+                            <p><strong>Description:</strong> <span th:text="${meetingRoomReservation.meetingRoomDescription}"></span></p>
+                            <p><strong>Amenities:</strong> <span th:text="${meetingRoomReservation.amenitiesInformation}"></span></p>
+                        </div>
 
-						<div class="form-group mb-3">
-							<label class="form-label">Meeting Room</label> <input
-								class="form-control" id="meetingRoomName" name="meetingRoomName"
-								placeholder="Meeting Room ID"
-								th:value="${meetingRoomReservation.meetingRoomName}" readonly
-								type="text" />
-						</div>
+                        <!-- Private meeting selection -->
+                        <div class="form-group mb-3" id="meetingRoomPrivate">
+                            <label class="form-label">Private Meeting</label>
+                            <select name="privateMeeting" id="privateMeeting" class="form-select">
+                                <option value="No" th:selected="${meetingRoomReservation.privateMeeting == 'No'}">No</option>
+                                <option value="Yes" th:selected="${meetingRoomReservation.privateMeeting == 'Yes'}">Yes</option>
+                            </select>
+                        </div>
 
-						<div class="form-group mb-3" id="meetingRoomInfo">
-							<h3>Meeting Room Details</h3>
-							<p>
-								<strong>Description:</strong> <span
-									th:text="${meetingRoomReservation.meetingRoomDescription}"></span>
-							</p>
-							<p>
-								<strong>Amenities:</strong> <span
-									th:text="${meetingRoomReservation.amenitiesInformation}"></span>
-							</p>
-						</div>
+                        <!-- Meeting description -->
+                        <div class="form-group mb-3">
+                            <label class="form-label">Meeting Description</label>
+                            <input class="form-control" id="meetingDescription" name="meetingDescription" placeholder="Enter Meeting Description"
+                                th:field="*{meetingDescription}" />
+                            <p th:errors="*{meetingDescription}" class="text-danger" th:if="${#fields.hasErrors('meetingDescription')}"></p>
+                        </div>
 
-						<div class="form-group mb-3" id="meetingRoomPrivate">
-							<label class="form-label">Private Meeting</label>
-							<div>
-								<select name="privateMeeting" id="privateMeeting"
-									class="form-select">
-									<option value="No"
-										th:selected="${meetingRoomReservation.privateMeeting == 'No'}">No</option>
-									<option value="Yes"
-										th:selected="${meetingRoomReservation.privateMeeting == 'Yes'}">Yes</option>
-								</select>
-							</div>
-						</div>
+                        <!-- Start time input -->
+                        <div class="form-group mb-3">
+                            <label class="form-label">Start Time</label>
+                            <input type="datetime-local" id="startTime" name="startTime" class="form-control" required>
+                            <input type="hidden" id="hiddenStartTime" th:value="${formattedStartTime}" />
+                        </div>
 
+                        <!-- End time input -->
+                        <div class="form-group mb-3">
+                            <label class="form-label">End Time</label>
+                            <input type="datetime-local" id="endTime" name="endTime" class="form-control" required>
+                            <input type="hidden" id="hiddenEndTime" th:value="${formattedEndTime}" />
+                        </div>
 
-						<div class="form-group mb-3">
-							<label class="form-label">Meeting Description</label> <input
-								class="form-control" id="meetingDescription"
-								name="meetingDescription"
-								placeholder="Enter Meeting Description"
-								th:field="*{meetingDescription}" type="text" />
-							<p th:errors="*{meetingDescription}" class="text-danger"
-								th:if="${#fields.hasErrors('meetingDescription')}"></p>
-						</div>
-
-						<div class="form-group mb-3">
-							<label class="form-label">Start Time</label>
-							<div>
-								<input type="datetime-local" id="startTime" name="startTime"
-									class="form-control" required> <input type="hidden"
-									id="hiddenStartTime" th:value="${formattedStartTime}" />
-							</div>
-						</div>
-
-						<div class="form-group mb-3">
-							<label class="form-label">End Time</label>
-							<div>
-								<input type="datetime-local" id="endTime" name="endTime"
-									class="form-control" required> <input type="hidden"
-									id="hiddenEndTime" th:value="${formattedEndTime}" />
-							</div>
-						</div>
-
-						<div class="form-group mb-3">
-							<button class="btn btn-primary" type="submit">Save</button>
-						</div>
-
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
-	<script>
+                        <!-- Save button -->
+                        <div class="form-group mb-3">
+                            <button class="btn btn-primary" type="submit">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- JavaScript for setting initial datetime values and validating time inputs -->
+    <script>
         function setDateTimeInputs() {
             const startTimeValue = document.getElementById('hiddenStartTime').value;
             const endTimeValue = document.getElementById('hiddenEndTime').value;
-
             document.getElementById('startTime').value = startTimeValue;
             document.getElementById('endTime').value = endTimeValue;
         }
         window.onload = setDateTimeInputs;
+
+        const startTimeInput = document.getElementById('startTime');
+        const endTimeInput = document.getElementById('endTime');
+        endTimeInput.addEventListener('change', function() {
+            const startTime = new Date(startTimeInput.value);
+            const endTime = new Date(endTimeInput.value);
+            if (endTime < startTime) {
+                alert('End time cannot be earlier than start time');
+                endTimeInput.value = '';
+            }
+        });
     </script>
 </body>
 </html>
