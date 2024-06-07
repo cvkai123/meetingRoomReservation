@@ -44,5 +44,7 @@ public class MeetingRoomReservationDto
     private String meetingRoomName;
     private String amenitiesInformation;
     private String meetingRoomDescription;
-           
+    
+    private String loginId;
+    private String bookingId;       
 }

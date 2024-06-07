@@ -73,6 +73,9 @@ public class MeetingRoomReservationController {
     		defaultRoomId = null;
     		defaultLocationId = null;
     	}
+        // Add the logged-in user ID to the model
+        model.addAttribute("loggedInUserId", getUsernameId());
+        
         model.addAttribute("meetingRoomsReservation", meetingRoomsReservation);
         return "meetingRoomReservationList";
     }
@@ -94,6 +97,9 @@ public class MeetingRoomReservationController {
         	theModel.addAttribute("listing",locationListing);
     	}
     	
+    	// Add the logged-in user ID to the model
+    	theModel.addAttribute("loggedInUserId", getUsernameId());
+        
         return "meetingRoomReservationList";
     }
     
@@ -139,6 +145,8 @@ public class MeetingRoomReservationController {
     	model.addAttribute("defaultLocationId", Long.parseLong(meetingRoomReservationDto.getOfficeLocationId()));
     	model.addAttribute("defaultRoomId", Long.parseLong(meetingRoomReservationDto.getMeetingRoomId()));
     	model.addAttribute("meetingRoomReservation", theMeetingRoom);
+    	// Add the logged-in user ID to the model
+        model.addAttribute("loggedInUserId", getUsernameId());
         
         return "meetingRoomReservationList";
     }
@@ -302,7 +310,9 @@ public class MeetingRoomReservationController {
     public List<MeetingRoomReservationDto> getMeetingRoomReservationInfo(@RequestParam("id") Long id){
     	List<MeetingRoomReservationDto> arrayListMeetingRoomReservation = new ArrayList<>();
     	List<MeetingRoomReservationDto> meetingRoomReservations = meetingRoomReservationService.getMeetingRoomReservationsByMeetingRoom(id.toString());
+    	String loginId = getUsernameId();
     	for(MeetingRoomReservationDto eachMeetingRoomReservation : meetingRoomReservations) {
+    		String eachUserId = eachMeetingRoomReservation.getUserId().toString();
     		eachMeetingRoomReservation.setOfficeLocationId(getOfficeLocationFromId(eachMeetingRoomReservation.getOfficeLocationId()));
     		
     		Optional<User> u = userService.findById(Long.parseLong(eachMeetingRoomReservation.getUserId()));
@@ -321,10 +331,22 @@ public class MeetingRoomReservationController {
             // Format the LocalDateTime without the 'T'
             eachMeetingRoomReservation.setStrStartTime(startDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             eachMeetingRoomReservation.setStrEndTime(endDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            
+            eachMeetingRoomReservation.setLoginId(loginId);
+            eachMeetingRoomReservation.setBookingId(eachUserId);
     		arrayListMeetingRoomReservation.add(eachMeetingRoomReservation);
     	}
     	
         return arrayListMeetingRoomReservation;
     }    
+    
+    public String getUsernameId() {
+    	
+    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	User u = userService.findByEmail(auth.getName());
+		if(u!=null) {
+			return u.getId().toString();
+		}
+    	
+        return null; 
+    }
 }
